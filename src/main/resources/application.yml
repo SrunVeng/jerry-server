@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: jerry-service
+  profiles:
+    active: local
+
+jwt:
+  secret: 123
+logging:
+  level:
+    org.springframework.security: DEBUG
