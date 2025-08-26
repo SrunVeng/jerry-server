@@ -110,10 +110,10 @@ public class AuthServiceImpl implements AuthService {
         final String username = "guest_" + req.getUuid().trim();
 
         // Find or create the USER role
-        RoleEntity userRole = roleRepository.findByName("USER")
+        RoleEntity userRole = roleRepository.findByName("GUEST")
                 .orElseGet(() -> {
                     RoleEntity r = new RoleEntity();
-                    r.setName("USER");
+                    r.setName("GUEST");
                     return roleRepository.save(r);
                 });
 

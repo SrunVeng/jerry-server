@@ -33,6 +33,13 @@ public class DataInitConfig {
                     return roleRepository.save(r);
                 });
 
+        RoleEntity guestRole = roleRepository.findByName("GUEST")
+                .orElseGet(() -> {
+                    RoleEntity r = new RoleEntity();
+                    r.setName("GUEST");
+                    return roleRepository.save(r);
+                });
+
         RoleEntity userRole = roleRepository.findByName("USER")
                 .orElseGet(() -> {
                     RoleEntity r = new RoleEntity();
