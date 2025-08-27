@@ -16,7 +16,4 @@ public class LocationEntity {
     private String name;
 
 
-
-
-
 }

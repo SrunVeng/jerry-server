@@ -9,5 +9,15 @@ import java.util.List;
 public interface MatchService {
     MatchCreateResponse matchCreate(MatchCreateRequest request);
 
-    List<MatchDetailResponse> getAll();
+    void matchDelete(Long id);
+
+    List<MatchResponse> getAll();
+
+    MatchDetailResponse getById(Long id);
+
+    MatchDetailResponse join(Long matchId, String username);
+
+    MatchDetailResponse leave(Long matchId, String username);
+
+    void locationCreate(String locationName);
 }

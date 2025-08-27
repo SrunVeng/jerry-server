@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserRegisterResponse userRegister(UserRegisterRequest req) {
-        UserEntity byUsername = userRepository.findByUsername(req.getUsername());
+        UserEntity byUsername = userRepository.findByusername(req.getUsername());
 
         if (byUsername != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserName Already Exist");
@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
                 });
 
         // Upsert the guest user
-        UserEntity user = userRepository.findByUsername(username);
+        UserEntity user = userRepository.findByusername(username);
         if (user == null) {
             user = new UserEntity();
             user.setUsername(username);

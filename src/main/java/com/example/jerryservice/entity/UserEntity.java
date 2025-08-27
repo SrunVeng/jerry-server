@@ -2,59 +2,62 @@ package com.example.jerryservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.management.relation.Role;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Entity
-@Table(name="app_users")
+@Table(name = "app_users")
 @Data
-public class UserEntity {
+@EqualsAndHashCode(callSuper = true)
+public class UserEntity extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-
+    @Size(max = 60)
     private String firstName;
 
+    @Size(max = 60)
     private String lastName;
-    @Column(unique = true)
+
+    @Email @Size(max = 120)
     private String email;
 
-    @Column(unique = true)
+    @Size(max = 60)
     private String username;
 
-
+    @JsonIgnore
+    @Size(max = 255)
     private String password;
 
+    @Size(max = 30)
     private String phoneNumber;
 
-    @Column(length=100)
+    @Column(length = 100)
     private String displayName;
 
-    //System Generate
-    private LocalDate createdAt;
-    private Boolean isVerified;
-    private Boolean isBlock;
+    // Security & lifecycle
+    private Boolean isVerified = Boolean.FALSE;
+    private Boolean isBlock = Boolean.FALSE;
+    private Boolean isAccountNonExpired = Boolean.TRUE;
+    private Boolean isAccountNonLocked = Boolean.TRUE;
+    private Boolean isCredentialsNonExpired = Boolean.TRUE;
+    private Boolean isDeleted = Boolean.FALSE;
 
-    //Security
-    private Boolean isAccountNonExpired;
-    private Boolean isAccountNonLocked;
-    private Boolean isCredentialsNonExpired;
-    private Boolean isDeleted;
-
-    @Enumerated(EnumType.STRING) @Column(nullable=false,length=20)
-    private SourceType source;                     // TELEGRAM or GUEST
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private SourceType source = SourceType.GUEST;   // GUEST by default
 
     // Push messaging
-    private String chatId;                           // set when user talks to bot
-    private Boolean allowNotification;             // user consent (default false)
-
+    @Column(name = "chat_id")
+    private String chatId;                          // Telegram chat id, etc.
+    private Boolean allowNotification = Boolean.FALSE;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -62,10 +65,9 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    @Column(nullable = false)
     @JsonIgnore
     private List<RoleEntity> roles;
 
-    public enum SourceType { USER, GUEST }
 
+    public enum SourceType { USER, GUEST }
 }
