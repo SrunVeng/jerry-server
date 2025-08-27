@@ -43,9 +43,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 
-	runtimeOnly 'com.h2database:h2'
-	implementation 'com.h2database:h2'
 
+	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.postgresql:postgresql'
 
 	//mapstruct
 	implementation "org.mapstruct:mapstruct:$mapstructVersion"
