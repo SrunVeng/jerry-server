@@ -20,4 +20,6 @@ public interface MatchService {
     MatchDetailResponse leave(Long matchId, String username);
 
     void locationCreate(String locationName);
+
+    List<LocationResponse> getAllLocation();
 }

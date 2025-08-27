@@ -1,12 +1,11 @@
 package com.example.jerryservice.service;
 
-import com.example.jerryservice.dto.request.GuestAuthRequest;
-import com.example.jerryservice.dto.request.RefreshTokenRequest;
-import com.example.jerryservice.dto.request.UserLoginRequest;
-import com.example.jerryservice.dto.request.UserRegisterRequest;
+import com.example.jerryservice.dto.request.*;
 import com.example.jerryservice.dto.response.UserLoginResponse;
 import com.example.jerryservice.dto.response.UserRegisterResponse;
 import com.example.jerryservice.dto.response.GuestResponse;
+
+import java.util.List;
 
 public interface AuthService {
     UserRegisterResponse userRegister(UserRegisterRequest request);
@@ -16,4 +15,10 @@ public interface AuthService {
     UserLoginResponse userLogin(UserLoginRequest request);
 
     UserLoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+
+    List<UserRegisterResponse> getAll();
+
+    void delete(Long id);
+
+    void update(UserUpdateRequest req);
 }

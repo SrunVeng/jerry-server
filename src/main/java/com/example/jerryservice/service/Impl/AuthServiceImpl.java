@@ -1,14 +1,12 @@
 package com.example.jerryservice.service.Impl;
 
-import com.example.jerryservice.dto.request.GuestAuthRequest;
-import com.example.jerryservice.dto.request.RefreshTokenRequest;
-import com.example.jerryservice.dto.request.UserLoginRequest;
-import com.example.jerryservice.dto.request.UserRegisterRequest;
+import com.example.jerryservice.dto.request.*;
 import com.example.jerryservice.dto.response.UserLoginResponse;
 import com.example.jerryservice.dto.response.UserRegisterResponse;
 import com.example.jerryservice.dto.response.GuestResponse;
 import com.example.jerryservice.entity.RoleEntity;
 import com.example.jerryservice.entity.UserEntity;
+import com.example.jerryservice.mapper.Mapper;
 import com.example.jerryservice.repository.GuestRepository;
 import com.example.jerryservice.repository.RoleRepository;
 import com.example.jerryservice.repository.UserRepository;
@@ -35,6 +33,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final GuestRepository guestRepository;
+    private final Mapper mapper;
     private final JwtEncoder jwtEncoderAccessToken;
     private final JwtEncoder jwtEncoderRefreshToken;
     private final DaoAuthenticationProvider daoAuthenticationProvider;
@@ -261,5 +260,44 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    @Override
+    public List<UserRegisterResponse> getAll() {
+        List<UserEntity> all = userRepository.findAll();
+        return mapper.toUserRegisterResponseList(all);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Optional<UserEntity> byId = userRepository.findById(id);
+        // role admin cant delete
+        if(byId.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
+        }
+        UserEntity user = byId.get();
+        if(user.getRoles().stream().anyMatch(r -> r.getName().equals("ADMIN"))){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't Delete Admin User");
+        }
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public void update(UserUpdateRequest req) {
+
+        Optional<UserEntity> byId = userRepository.findById(Long.valueOf(req.getId()));
+        if(byId.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User Not Found");
+        }
+        UserEntity user = byId.get();
+        user.setDisplayName(req.getDisplayName());
+        user.setEmail(req.getEmail());
+        user.setPhoneNumber(req.getPhoneNumber());
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
+        user.setRoles(req.getRoles());
+        user.setUsername(req.getUsername());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        userRepository.save(user);
     }
 }

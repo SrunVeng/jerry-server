@@ -1,6 +1,7 @@
 package com.example.jerryservice.service.Impl;
 
 import com.example.jerryservice.dto.request.MatchCreateRequest;
+import com.example.jerryservice.dto.response.LocationResponse;
 import com.example.jerryservice.dto.response.MatchCreateResponse;
 import com.example.jerryservice.dto.response.MatchDetailResponse;
 import com.example.jerryservice.dto.response.MatchResponse;
@@ -60,9 +61,9 @@ public class MatchServiceImpl implements MatchService {
     public void matchDelete(Long id) {
 
         if (!matchRepository.existsById(id)) {
-                throw new EntityNotFoundException("Match not found with id " + id);
-            }
-            matchRepository.deleteById(id);
+            throw new EntityNotFoundException("Match not found with id " + id);
+        }
+        matchRepository.deleteById(id);
 
     }
 
@@ -115,7 +116,7 @@ public class MatchServiceImpl implements MatchService {
         PlayerEntity player = new PlayerEntity();
         player.setUser(user);
         player.setMatch(match);
-        player.setAttributes(50,50,50,50,50,50); // optional defaults
+        player.setAttributes(50, 50, 50, 50, 50, 50); // optional defaults
         match.addPlayer(player);
 
         matchRepository.saveAndFlush(match);
@@ -156,12 +157,18 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public void locationCreate(String locationName) {
         LocationEntity byname = locationRepository.findByname(locationName);
-        if(byname != null) {
+        if (byname != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "location already exists");
         }
         LocationEntity newLocation = new LocationEntity();
         newLocation.setName(locationName);
         locationRepository.save(newLocation);
+    }
+
+    @Override
+    public List<LocationResponse> getAllLocation() {
+        List<LocationEntity> entities = locationRepository.findAll();
+        return mapper.toLocationResponseList(entities);
     }
 }
 

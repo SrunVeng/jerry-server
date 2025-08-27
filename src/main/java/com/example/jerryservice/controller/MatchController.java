@@ -3,10 +3,7 @@ package com.example.jerryservice.controller;
 
 import com.example.jerryservice.dto.request.MatchCreateRequest;
 import com.example.jerryservice.dto.request.UserRegisterRequest;
-import com.example.jerryservice.dto.response.MatchCreateResponse;
-import com.example.jerryservice.dto.response.MatchDetailResponse;
-import com.example.jerryservice.dto.response.MatchResponse;
-import com.example.jerryservice.dto.response.UserRegisterResponse;
+import com.example.jerryservice.dto.response.*;
 import com.example.jerryservice.service.MatchService;
 import com.example.jerryservice.service.UserService;
 import jakarta.validation.Valid;
@@ -55,7 +52,7 @@ public class MatchController {
         MatchDetailResponse res = matchService.getById(id);
         return ResponseEntity.ok(res);
     }
-
+    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
     @PostMapping("/join/{matchId}")
     public ResponseEntity<MatchDetailResponse> join(@PathVariable Long matchId,
                                                     Authentication authentication) {
@@ -63,7 +60,7 @@ public class MatchController {
         MatchDetailResponse dto = matchService.join(matchId, username);
         return ResponseEntity.ok(dto);
     }
-
+    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
     @PostMapping("/leave/{matchId}")
     public ResponseEntity<MatchDetailResponse> leave(@PathVariable Long matchId,
                                                      Authentication authentication) {
@@ -72,12 +69,18 @@ public class MatchController {
         return ResponseEntity.ok(dto);
     }
 
-
-    @PostMapping("/location/create")
-    public ResponseEntity<Void> leave(@RequestParam String locationName) {
+    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
+    @PostMapping("/location/create/{locationName}")
+    public ResponseEntity<Void> addLocation(@PathVariable String locationName) {
          matchService.locationCreate(locationName);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
+    @GetMapping("/location/getAll")
+    public ResponseEntity<List<LocationResponse>> getAllLocation() {
+        List<LocationResponse> allLocation = matchService.getAllLocation();
+        return ResponseEntity.ok(allLocation);
+    }
 
 }
