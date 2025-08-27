@@ -21,6 +21,6 @@ public class UserUpdateRequest {
     private UserEntity.SourceType source;
     private String chatId;
     private Boolean allowNotification;
-    private List<RoleEntity> roles;
+    private String roles;
     public enum SourceType {USER, GUEST}
 }

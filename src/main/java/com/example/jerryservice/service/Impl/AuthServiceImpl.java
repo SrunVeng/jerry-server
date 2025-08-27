@@ -79,13 +79,9 @@ public class AuthServiceImpl implements AuthService {
 
         // roles
         List<RoleEntity> roles = new ArrayList<>();
-        RoleEntity userRole = roleRepository.findByName("USER")
-                .orElseGet(() -> {
-                    RoleEntity r = new RoleEntity();
-                    r.setName("USER");
-                    return roleRepository.save(r);
-                });
-        roles.add(userRole);
+        RoleEntity role = roleRepository.findByName(req.getRole())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role Not Found"));
+        roles.add(role);
         user.setRoles(roles);
 
         userRepository.save(user);
@@ -295,7 +291,8 @@ public class AuthServiceImpl implements AuthService {
         user.setPhoneNumber(req.getPhoneNumber());
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
-        user.setRoles(req.getRoles());
+        Optional<RoleEntity> role = roleRepository.findByName(req.getRoles());
+        user.setRoles(List.of(role.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role Not Found"))));
         user.setUsername(req.getUsername());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         userRepository.save(user);
