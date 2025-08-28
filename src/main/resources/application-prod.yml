@@ -28,3 +28,7 @@ telegram:
     username: ${TELEGRAM_BOT_USERNAME:}
     token: ${TELEGRAM_BOT_TOKEN:}
     chat-id: ${TELEGRAM_CHAT_ID:}
+
+
+lang:
+  push: KH   # EN or KH
