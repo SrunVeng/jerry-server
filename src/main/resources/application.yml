@@ -10,24 +10,17 @@ server:
     enabled: true
     mime-types: application/json,application/xml,text/html,text/xml,text/plain
 
-# Shared JPA defaults; profile files can override
-spring:
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-
 # Custom app configs (bind with @ConfigurationProperties if you like)
 security:
   jwt:
-    secret: ${JWT_SECRET:change-me}
+    secret: ${JWT_SECRET:jerry-general}
     expiration: ${JWT_EXP_SECONDS:3600}
 
 telegram:
   bot:
     username: ${TELEGRAM_BOT_USERNAME:}
     token: ${TELEGRAM_BOT_TOKEN:}
-    webhook-url: ${TELEGRAM_WEBHOOK_URL:}
+
 
 logging:
   level:

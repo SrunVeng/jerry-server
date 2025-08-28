@@ -4,10 +4,7 @@ spring:
       on-profile: prod
 
   datasource:
-    # Prefer a single SPRING_DATASOURCE_URL with user/pass embedded.
-    # Example: jdbc:postgresql://host:5432/db?user=user&password=pass&sslmode=require
     url: ${SPRING_DATASOURCE_URL:}
-    # If you don't embed user/pass in URL, set these envs instead:
     username: ${DB_USER:}
     password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
@@ -25,3 +22,6 @@ logging:
     root: INFO
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
+telegram:
+  bot:
+    chat-id: ${TELEGRAM_CHAT_ID:}
