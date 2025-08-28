@@ -1,13 +1,21 @@
-FROM ubuntu:latest AS build
-RUN apt-get update && \
-    apt-get install -y openjdk-21-jdk curl unzip git && \
-    apt-get clean
+# ---- Build stage ----
+FROM eclipse-temurin:21-jdk-alpine AS build
+
 WORKDIR /app
 COPY . .
-RUN chmod +x ./gradlew
-RUN ./gradlew bootJar --no-daemon
+RUN chmod +x ./gradlew && ./gradlew bootJar --no-daemon
 
-FROM eclipse-temurin:21-jre-alpine
+# ---- Runtime stage ----
+FROM eclipse-temurin:17-jre-alpine
+
+# Default profile can be overridden by env at runtime
+ENV SPRING_PROFILES_ACTIVE=prod
+# Optional JVM flags (memory limits, GC, etc.)
+ENV JAVA_OPTS=""
+
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY --from=build /app/build/libs/*.jar /app/app.jar
+
+EXPOSE 8080
+# Use sh -c so we can expand env vars
+ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} $JAVA_OPTS -jar app.jar"]

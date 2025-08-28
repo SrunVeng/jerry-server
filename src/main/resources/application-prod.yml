@@ -1,17 +1,27 @@
-# ===== PROD profile =====
 spring:
   config:
     activate:
       on-profile: prod
+
+  datasource:
+    # Prefer a single SPRING_DATASOURCE_URL with user/pass embedded.
+    # Example: jdbc:postgresql://host:5432/db?user=user&password=pass&sslmode=require
+    url: ${SPRING_DATASOURCE_URL:}
+    # If you don't embed user/pass in URL, set these envs instead:
+    username: ${DB_USER:}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: validate
-  datasource:
-    hikari:
-      maximum-pool-size: ${HIKARI_MAX:30}
-      minimum-idle: ${HIKARI_MIN:5}
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
 logging:
   level:
     root: INFO
-    org.hibernate.SQL: INFO
-    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
