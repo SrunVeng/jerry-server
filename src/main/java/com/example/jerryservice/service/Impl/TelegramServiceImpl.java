@@ -18,7 +18,7 @@ public class TelegramServiceImpl implements TelegramService {
 
     private final TelegramRestClient telegramRestClient;
 
-    @Value("${app.frontend.base-url:https://jerryfc.example.com}")
+    @Value("${app.frontend.base-url:https://jerry-ui-one.vercel.app/}")
     private String appBaseUrl;
 
     @Value("${lang.push:EN}")              // <-- read toggle from yml
