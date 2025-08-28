@@ -30,9 +30,9 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     private String inviteUrlForMatch(Long matchId) {
-        String base = (appBaseUrl == null) ? "" : appBaseUrl.replaceAll("/+$", "");
-        if (base.isEmpty()) return "";
-        return (matchId == null) ? base + "/join" : base + "/join?matchId=" + matchId;
+        if (appBaseUrl == null) return "";
+        // normalize to remove trailing slashes
+        return appBaseUrl.replaceAll("/+$", "");
     }
 
     @Override
