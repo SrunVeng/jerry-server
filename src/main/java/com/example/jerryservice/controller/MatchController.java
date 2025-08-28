@@ -2,6 +2,7 @@ package com.example.jerryservice.controller;
 
 
 import com.example.jerryservice.dto.request.MatchCreateRequest;
+import com.example.jerryservice.dto.request.MatchUpdateRequest;
 import com.example.jerryservice.dto.request.UserRegisterRequest;
 import com.example.jerryservice.dto.response.*;
 import com.example.jerryservice.service.MatchService;
@@ -21,7 +22,7 @@ import java.util.List;
 public class MatchController {
 
     private final MatchService matchService;
-    private final UserService userService;
+
 
 
     @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
@@ -29,6 +30,13 @@ public class MatchController {
     public ResponseEntity<MatchCreateResponse> create(@Valid @RequestBody MatchCreateRequest request) {
         MatchCreateResponse res = matchService.matchCreate(request);
         return ResponseEntity.ok(res);
+    }
+
+    @PreAuthorize("hasAnyAuthority('SCOPE_ROLE_ADMIN', 'SCOPE_ROLE_USER')")
+    @PatchMapping("/update")
+    public ResponseEntity<Void> update(@Valid @RequestBody MatchUpdateRequest request) {
+        matchService.matchUpdate(request);
+        return ResponseEntity.noContent().build();
     }
 
 

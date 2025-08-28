@@ -9,6 +9,8 @@ import java.util.List;
 public interface MatchService {
     MatchCreateResponse matchCreate(MatchCreateRequest request);
 
+    void matchUpdate(MatchUpdateRequest request);
+
     void matchDelete(Long id);
 
     List<MatchResponse> getAll();

@@ -3,10 +3,10 @@ package com.example.jerryservice.dto.request;
 import lombok.Data;
 
 
-
 @Data
-public class MatchCreateRequest {
+public class MatchUpdateRequest {
 
+    private String id;
     private String opponentName;
     private String matchDate;
     private String time;

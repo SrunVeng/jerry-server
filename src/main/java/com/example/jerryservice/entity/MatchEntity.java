@@ -27,6 +27,8 @@ public class MatchEntity extends AuditEntity {
 
     private String kickOffTime; // consider LocalTime if possible
 
+    private String pitchNumber;
+
     @Size(max = 200)
     private String location;
 

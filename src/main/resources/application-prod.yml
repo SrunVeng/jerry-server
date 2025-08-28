@@ -22,6 +22,9 @@ logging:
     root: INFO
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
+
 telegram:
   bot:
+    username: ${TELEGRAM_BOT_USERNAME:}
+    token: ${TELEGRAM_BOT_TOKEN:}
     chat-id: ${TELEGRAM_CHAT_ID:}

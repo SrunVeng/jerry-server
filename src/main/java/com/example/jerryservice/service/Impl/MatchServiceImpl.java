@@ -1,6 +1,7 @@
 package com.example.jerryservice.service.Impl;
 
 import com.example.jerryservice.dto.request.MatchCreateRequest;
+import com.example.jerryservice.dto.request.MatchUpdateRequest;
 import com.example.jerryservice.dto.response.LocationResponse;
 import com.example.jerryservice.dto.response.MatchCreateResponse;
 import com.example.jerryservice.dto.response.MatchDetailResponse;
@@ -12,9 +13,9 @@ import com.example.jerryservice.entity.UserEntity;
 import com.example.jerryservice.mapper.Mapper;
 import com.example.jerryservice.repository.LocationRepository;
 import com.example.jerryservice.repository.MatchRepository;
-import com.example.jerryservice.repository.PlayerRepository;
 import com.example.jerryservice.repository.UserRepository;
 import com.example.jerryservice.service.MatchService;
+import com.example.jerryservice.service.TelegramService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class MatchServiceImpl implements MatchService {
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
     private final Mapper mapper;
+    private final TelegramService telegramService;
 
     @Override
     @Transactional
@@ -42,6 +44,7 @@ public class MatchServiceImpl implements MatchService {
         MatchEntity m = new MatchEntity();
         m.setOpponentName(request.getOpponentName());
         m.setMatchDate(request.getMatchDate());
+        m.setPitchNumber(request.getPitchNumber());
         m.setKickOffTime(request.getTime());
         m.setMaxPlayers(Integer.valueOf(request.getNumberPlayer()));
         m.setLocation(request.getLocation());
@@ -49,6 +52,11 @@ public class MatchServiceImpl implements MatchService {
         m.setCreatedAt(LocalDate.now());
 
         matchRepository.save(m);
+
+        // Notify Telegram (best-effort)
+        try {
+            telegramService.sendMessageCreatedMatch(m);
+        } catch (Exception ignored) { /* avoid breaking API if Telegram fails */ }
 
         return MatchCreateResponse.builder()
                 .createdAt(LocalDate.now())
@@ -58,12 +66,43 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
+    public void matchUpdate(MatchUpdateRequest request) {
+
+        Optional<MatchEntity> byId = matchRepository.findById(Long.valueOf(request.getId()));
+        if(byId.isEmpty()){
+            throw new EntityNotFoundException("Match not found with id " + request.getId());
+        }
+        MatchEntity m = byId.get();
+        m.setOpponentName(request.getOpponentName());
+        m.setMatchDate(request.getMatchDate());
+        m.setPitchNumber(request.getPitchNumber());
+        m.setKickOffTime(request.getTime());
+        m.setMaxPlayers(Integer.valueOf(request.getNumberPlayer()));
+        m.setLocation(request.getLocation());
+        m.setNotes(request.getNotes());
+        matchRepository.save(m);
+        // Notify Telegram (best-effort)
+        try {
+            telegramService.sendMessageSummaryUpdate(m);
+        } catch (Exception ignored) { /* avoid breaking API if Telegram fails */ }
+
+    }
+
+
+    @Override
     public void matchDelete(Long id) {
 
-        if (!matchRepository.existsById(id)) {
-            throw new EntityNotFoundException("Match not found with id " + id);
-        }
+        // fetch entity first (so we can notify with details)
+        MatchEntity match = matchRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Match not found with id " + id));
+
         matchRepository.deleteById(id);
+
+        // best-effort Telegram notification (never fail the API because of Telegram)
+        try {
+            telegramService.sendMessageCancelledMatch(match);
+        } catch (Exception ignored) {
+        }
 
     }
 
@@ -123,6 +162,11 @@ public class MatchServiceImpl implements MatchService {
 
         MatchEntity refreshed = matchRepository.findByIdWithPlayers(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found"));
+        // Notify Telegram (best-effort)
+        try {
+            telegramService.sendMessagePlayerJoined(user, refreshed);
+        } catch (Exception ignored) { }
+
         return mapper.toMatchDetailResponse(Optional.ofNullable(refreshed));
     }
 
@@ -151,6 +195,11 @@ public class MatchServiceImpl implements MatchService {
 
         MatchEntity refreshed = matchRepository.findByIdWithPlayers(matchId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Match not found"));
+        // Notify Telegram (best-effort)
+        try {
+            telegramService.sendMessagePlayerLeft(user, refreshed);
+        } catch (Exception ignored) { }
+
         return mapper.toMatchDetailResponse(Optional.ofNullable(refreshed));
     }
 

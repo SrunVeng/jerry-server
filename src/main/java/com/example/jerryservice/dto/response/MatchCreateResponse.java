@@ -12,7 +12,8 @@ import java.time.LocalDate;
 public class MatchCreateResponse {
 
     private String opponentName;
-    private String time;
+    private String pitchNumber;
+    private String kickOffTime;
     private String location;
     private String matchDate;
     private LocalDate createdAt;
